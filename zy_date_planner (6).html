@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#dff2ff">
+<title>dinner tom prettyyy? ☁️</title>
+<style>
+  :root {
+    --sky: #dff2ff;
+    --sky-2: #c5e8ff;
+    --blue: #73b7e8;
+    --blue-dark: #32668d;
+    --ink: #34556f;
+    --muted: #718da4;
+    --white: #ffffff;
+    --line: #d8eaf6;
+    --selected: #e4f4ff;
+    --shadow: 0 18px 50px rgba(72, 133, 177, .14);
+    --radius: 24px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--ink);
+    font-family: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif;
+    background:
+      radial-gradient(circle at 8% 8%, rgba(255,255,255,.95) 0 3px, transparent 4px),
+      radial-gradient(circle at 90% 18%, rgba(255,255,255,.85) 0 4px, transparent 5px),
+      linear-gradient(180deg, #eaf7ff 0%, #f7fbff 52%, #e8f5ff 100%);
+    background-size: 75px 75px, 105px 105px, auto;
+  }
+  button, input, textarea { font: inherit; }
+  button { cursor: pointer; }
+  .wrap { width: min(760px, 100%); margin: 0 auto; padding: 24px 16px 44px; }
+  .topline { display:flex; align-items:center; justify-content:space-between; gap:12px; margin: 0 2px 14px; }
+  .pill { background: rgba(255,255,255,.8); border:1px solid #d8edfc; border-radius:999px; padding:8px 12px; font-size:.76rem; font-weight:800; letter-spacing:.08em; color:#4e8bb8; }
+  .tiny { font-size:.84rem; color:var(--muted); }
+  .hero { text-align:center; padding: 18px 8px 22px; }
+  .cloud { font-size: 2.7rem; line-height:1; filter: drop-shadow(0 5px 0 rgba(115,183,232,.12)); }
+  h1 { font-size: clamp(2rem, 7vw, 3.4rem); line-height:1.04; margin: 13px 0 10px; letter-spacing:-.055em; color:var(--blue-dark); }
+  .hero p { max-width: 450px; margin: 0 auto; line-height:1.6; color:#6688a3; }
+  .doodle-row { display:flex; justify-content:center; gap:18px; margin-top:18px; font-size:1.4rem; }
+  .progress-shell { height:8px; background:#e1f0fb; border-radius:999px; overflow:hidden; margin: 0 0 18px; }
+  .progress { height:100%; width:25%; background:linear-gradient(90deg,#8dcbf2,#5fa8df); border-radius:999px; transition:width .3s ease; }
+  .card { background:rgba(255,255,255,.94); border:1px solid rgba(210,232,247,.95); border-radius:var(--radius); box-shadow:var(--shadow); padding:clamp(20px,5vw,34px); }
+  .step { display:none; animation: pop .28s ease; }
+  .step.active { display:block; }
+  @keyframes pop { from { opacity:0; transform:translateY(7px) scale(.99); } to {opacity:1;transform:none;} }
+  .step-number { color:#6ca8d2; font-size:.76rem; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }
+  h2 { font-size:clamp(1.35rem,4.5vw,1.8rem); color:var(--blue-dark); margin:9px 0 8px; letter-spacing:-.03em; }
+  .hint { color:var(--muted); margin:0 0 20px; line-height:1.5; font-size:.95rem; }
+  .options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:11px; }
+  .option {
+    border:1.5px solid var(--line); background:#fbfdff; color:var(--ink);
+    border-radius:17px; padding:15px 14px; text-align:left; min-height:74px;
+    transition:transform .15s,border-color .15s,background .15s,box-shadow .15s;
+    display:flex; align-items:center; gap:11px; width:100%;
+  }
+  .option:hover { transform:translateY(-2px); border-color:#a6d6f5; }
+  .option[aria-pressed="true"] { background:var(--selected); border-color:#72b9e9; box-shadow:0 0 0 3px rgba(114,185,233,.12); }
+  .emoji { font-size:1.55rem; flex:0 0 auto; }
+  .option strong { display:block; font-size:.96rem; }
+  .option small { display:block; color:var(--muted); font-size:.79rem; margin-top:3px; line-height:1.35; }
+  .options.single { grid-template-columns:1fr; }
+  .food-grid .option { min-height:88px; }
+  .field { width:100%; border:1.5px solid var(--line); border-radius:15px; padding:14px 15px; color:var(--ink); background:#fbfdff; outline:none; }
+  .field:focus { border-color:#72b9e9; box-shadow:0 0 0 3px rgba(114,185,233,.16); }
+  textarea.field { min-height:105px; resize:vertical; }
+  .field-label { display:block; font-weight:800; font-size:.9rem; margin:16px 0 8px; color:#4d7695; }
+  .actions { display:flex; gap:10px; justify-content:space-between; margin-top:25px; }
+  .btn { border:0; border-radius:999px; padding:13px 20px; font-weight:850; transition:transform .15s,filter .15s; }
+  .btn:hover { transform:translateY(-1px); filter:brightness(.99); }
+  .btn.primary { color:white; background:linear-gradient(135deg,#79bee9,#559ed8); box-shadow:0 7px 18px rgba(85,158,216,.25); flex:1; }
+  .btn.secondary { background:#eff8ff; color:#5886a8; border:1px solid #d7ebf9; }
+  .btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+  .dots { text-align:center; margin-top:16px; color:#8aabc4; font-size:.8rem; }
+  .summary { background:#f3faff; border:1px dashed #b7dbf3; border-radius:17px; padding:16px; margin:16px 0; }
+  .summary-row { display:flex; justify-content:space-between; gap:15px; padding:9px 0; border-bottom:1px solid #e1eff9; }
+  .summary-row:last-child { border-bottom:0; }
+  .summary-row span:first-child { color:#7392aa; }
+  .summary-row strong { text-align:right; max-width:60%; overflow-wrap:anywhere; }
+  .success { text-align:center; padding:10px 0 4px; }
+  .success .big { font-size:3.6rem; }
+  .notice { display:none; border-radius:14px; padding:12px 14px; margin-top:14px; font-size:.9rem; line-height:1.5; }
+  .notice.show { display:block; }
+  .notice.info { background:#edf8ff; color:#47799e; }
+  .notice.error { background:#fff1f1; color:#a34f5a; }
+  .notice.good { background:#effaf3; color:#34754c; }
+  footer { text-align:center; padding:22px 10px 0; font-size:.8rem; color:#88a7bf; line-height:1.6; }
+  .heart { color:#77b7e6; }
+  @media (max-width:480px) {
+    .wrap { padding:15px 12px 30px; }
+    .options { gap:9px; }
+    .option { padding:12px 10px; gap:8px; min-height:72px; }
+    .emoji { font-size:1.35rem; }
+    .option strong { font-size:.88rem; }
+    .option small { font-size:.74rem; }
+    .actions .btn { padding:12px 15px; }
+  }
+  @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; transition:none!important; scroll-behavior:auto!important; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="hero">
+    <div class="cloud" aria-hidden="true">☁️ 🩵 ☁️</div>
+    <h1>HI GANDA! DINNER TAYO TOMM?</h1>
+    <p>hi gandaaaa dinner toooommmm if available ka lang namaaaaaaannn</p>
+    <div class="doodle-row" aria-hidden="true"><span>🍜</span><span>🧋</span><span>🍰</span><span>🧸</span></div>
+  </header>
+
+  <div class="progress-shell" aria-label="Form progress"><div class="progress" id="progress"></div></div>
+  <section class="card" aria-live="polite">
+    <form id="dateForm">
+      <div class="step active" data-step="0">
+        <div class="step-number">QUESTION 01 · 04</div>
+        <h2>g ba dinner si ganda tom, meh, or nahhh?</h2>
+        <div class="options single" data-group="dinner" data-required="true">
+          <button type="button" class="option" data-value="gggggg"><span class="emoji">🥹</span><span><strong>gggggg</strong></span></button>
+          <button type="button" class="option" data-value="mehhh (not sure)"><span class="emoji">🤔</span><span><strong>mehhh (not sure)</strong></span></button>
+          <button type="button" class="option" data-value="nahhhhh"><span class="emoji">🧸</span><span><strong>nahhhhh</strong></span></button>
+        </div>
+      </div>
+
+      <div class="step" data-step="1">
+        <div class="step-number">QUESTION 02 · 04</div>
+        <h2>where us tommm</h2>
+        <div class="options single" data-group="location" data-required="true">
+          <button type="button" class="option" data-value="within ubelt"><span class="emoji">📍</span><span><strong>within ubelt</strong></span></button>
+          <button type="button" class="option" data-value="outside ubelt"><span class="emoji">🚗</span><span><strong>outside ubelt</strong></span></button>
+        </div>
+      </div>
+
+      <div class="step" data-step="2">
+        <div class="step-number">QUESTION 03 · 04</div>
+        <h2>what time want ng prettyyy</h2>
+        <div class="options single" data-group="time" data-required="true">
+          <button type="button" class="option" data-value="5:00 PM"><span class="emoji">🌤️</span><span><strong>5:00 PM</strong></span></button>
+          <button type="button" class="option" data-value="6:00 PM"><span class="emoji">🩵</span><span><strong>6:00 PM</strong></span></button>
+          <button type="button" class="option" data-value="7:00 PM"><span class="emoji">🌆</span><span><strong>7:00 PM</strong></span></button>
+          <button type="button" class="option" data-value="8:00 PM"><span class="emoji">🌙</span><span><strong>8:00 PM</strong></span></button>
+        </div>
+      </div>
+
+      <div class="step" data-step="3">
+        <div class="step-number">QUESTION 04 · 04</div>
+        <h2>ano cinecrave ni gandaaaa 🍽️</h2>
+        <div class="options food-grid" data-group="cravings" data-multiple="true" data-required="true">
+          <button type="button" class="option" data-value="Japanese"><span class="emoji">🍣</span><span><strong>Japanese</strong></span></button>
+          <button type="button" class="option" data-value="Korean"><span class="emoji">🍜</span><span><strong>Korean</strong></span></button>
+          <button type="button" class="option" data-value="Chinese"><span class="emoji">🥢</span><span><strong>Chinese</strong></span></button>
+          <button type="button" class="option" data-value="Filipino"><span class="emoji">🍲</span><span><strong>Filipino</strong></span></button>
+          <button type="button" class="option" data-value="Italian / Pasta"><span class="emoji">🍝</span><span><strong>Italian / pasta</strong></span></button>
+          <button type="button" class="option" data-value="Burgers / comfort food"><span class="emoji">🍔</span><span><strong>Burgers</strong></span></button>
+          <button type="button" class="option" data-value="Cafe / Dessert"><span class="emoji">🧋</span><span><strong>Café / dessert</strong></span></button>
+        </div>
+      </div>
+
+      <div class="notice error" id="validation" role="alert"></div>
+      <div class="actions" id="navActions">
+        <button type="button" class="btn secondary" id="backBtn" disabled>← Back</button>
+        <button type="button" class="btn primary" id="nextBtn">Next ☁️</button>
+      </div>
+    </form>
+
+    <div class="step" id="reviewStep">
+      <div class="step-number">ALL DONE · CHECK YOUR PICKS</div>
+      <h2>our little date plan, so far ☁️</h2>
+      <p class="hint">check your picks, pretty. then send them my way so I can plan something nice for us 🩵</p>
+      <div class="summary" id="summary"></div>
+      <div class="notice info show" id="submitInfo">Choose how you’d like to send your answers to me. 🩵</div>
+      <div class="notice error" id="submitError" role="alert"></div>
+      <div class="notice good" id="submitSuccess" role="status"></div>
+      <div class="actions">
+        <button type="button" class="btn secondary" id="editBtn">← Edit answers</button>
+        <button type="button" class="btn primary" id="submitBtn">Submit answers 🩵</button>
+      </div>
+    </div>
+
+    <div class="step" id="successStep">
+      <div class="success">
+        <div class="big">🎉☁️🩵</div>
+        <h2>YAYYY, our date planning has begun!</h2>
+        <p class="hint">thank you for helping me plan, pretty hehe. I’m looking forward to spending time with you. ♡</p>
+        <div class="summary" id="finalSummary"></div>
+        <p class="tiny">one little date, one very happy planner ☁️</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+/*
+  ANSWER COLLECTION SETUP:
+  1) Follow the instructions in PUBLISHING_GUIDE_ZY_DATE_PLANNER.txt.
+  2) Paste your Google Apps Script Web App URL below.
+  3) If this stays blank, submissions can still be downloaded/copied on your device,
+     but they will NOT automatically reach you from Zy’s device.
+*/
+const GOOGLE_SCRIPT_URL = ""; // Paste your deployed Apps Script URL between the quotes.
+
+const answers = { dinner: "", location: "", time: "", cravings: [] };
+const steps = [...document.querySelectorAll("#dateForm .step")];
+const reviewStep = document.getElementById("reviewStep");
+const successStep = document.getElementById("successStep");
+const progress = document.getElementById("progress");
+const backBtn = document.getElementById("backBtn");
+const nextBtn = document.getElementById("nextBtn");
+const navActions = document.getElementById("navActions");
+const validation = document.getElementById("validation");
+let current = 0;
+
+document.querySelectorAll(".options").forEach(group => {
+  group.querySelectorAll(".option").forEach(button => {
+    button.setAttribute("aria-pressed", "false");
+    button.addEventListener("click", () => {
+      const key = group.dataset.group;
+      const value = button.dataset.value;
+      if (group.dataset.multiple === "true") {
+        const set = new Set(answers[key]);
+        if (set.has(value)) set.delete(value); else set.add(value);
+        answers[key] = [...set];
+        button.setAttribute("aria-pressed", String(set.has(value)));
+      } else {
+        answers[key] = value;
+        group.querySelectorAll(".option").forEach(b => b.setAttribute("aria-pressed", String(b === button)));
+      }
+      validation.classList.remove("show");
+    });
+  });
+});
+
+function showStep(index) {
+  current = index;
+  steps.forEach((s, i) => s.classList.toggle("active", i === index));
+  reviewStep.classList.remove("active");
+  successStep.classList.remove("active");
+  navActions.style.display = "flex";
+  backBtn.disabled = index === 0;
+  nextBtn.textContent = index === steps.length - 1 ? "Review answers ☁️" : "Next ☁️";
+  progress.style.width = `${((index + 1) / (steps.length + 1)) * 100}%`;
+  validation.classList.remove("show");
+}
+function validateStep(index) {
+  const group = steps[index].querySelector(".options");
+  const key = group.dataset.group;
+  const val = answers[key];
+  if (!val || (Array.isArray(val) && val.length === 0)) {
+    validation.textContent = index === 3 ? "pick at least one craving, pretty! 🧋" : "choose an option first, pretty hehe 🩵";
+    validation.classList.add("show");
+    return false;
+  }
+  return true;
+}
+function displayValue(value) {
+  if (Array.isArray(value)) return value.length ? value.join(", ") : "Not answered";
+  return value || "Not answered";
+}
+function getPayload() {
+  return {
+    submittedAt: new Date().toISOString(),
+    dinnerTomorrow: answers.dinner,
+    location: answers.location,
+    preferredTime: answers.time,
+    cravings: answers.cravings.join(", "),
+    source: "Zy Date Planner"
+  };
+}
+function buildSummary(target) {
+  const p = getPayload();
+  const rows = [
+    ["Dinner tomorrow?", p.dinnerTomorrow],
+    ["Where?", p.location],
+    ["What time?", p.preferredTime],
+    ["Cravings", p.cravings || "Not answered"]
+  ];
+  target.innerHTML = "";
+  rows.forEach(([label, value]) => {
+    const row = document.createElement("div");
+    row.className = "summary-row";
+    const l = document.createElement("span"); l.textContent = label;
+    const v = document.createElement("strong"); v.textContent = value;
+    row.append(l, v); target.append(row);
+  });
+}
+function showReview() {
+  steps.forEach(s => s.classList.remove("active"));
+  reviewStep.classList.add("active");
+  successStep.classList.remove("active");
+  navActions.style.display = "none";
+  progress.style.width = "100%";
+  buildSummary(document.getElementById("summary"));
+  document.getElementById("submitError").classList.remove("show");
+  document.getElementById("submitSuccess").classList.remove("show");
+  document.getElementById("submitBtn").disabled = false;
+}
+backBtn.addEventListener("click", () => { if (current > 0) showStep(current - 1); });
+nextBtn.addEventListener("click", () => {
+  if (!validateStep(current)) return;
+  if (current < steps.length - 1) showStep(current + 1); else showReview();
+});
+document.getElementById("editBtn").addEventListener("click", () => showStep(3));
+
+document.getElementById("submitBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("submitBtn");
+  const error = document.getElementById("submitError");
+  const success = document.getElementById("submitSuccess");
+  error.classList.remove("show"); success.classList.remove("show");
+  const payload = getPayload();
+  btn.disabled = true; btn.textContent = "Sending... ☁️";
+  if (GOOGLE_SCRIPT_URL.trim()) {
+    try {
+      // Apps Script accepts this simple POST. no-cors avoids a browser CORS block;
+      // Google Sheets is the destination. A network failure still triggers the catch.
+      await fetch(GOOGLE_SCRIPT_URL.trim(), {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      // no-cors responses are opaque, so this means the request was sent, not that
+      // the server's internal write has been independently verified.
+      finishSuccess(payload, "Your answers have been sent to the planner. 🩵 If the sheet is not updated after a minute, check the Apps Script deployment and URL.");
+    } catch (e) {
+      error.textContent = "We couldn't send the answers automatically. You can download or copy them below and send them to the planner.";
+      error.classList.add("show");
+      btn.disabled = false; btn.textContent = "Try sending again 🩵";
+      addFallbackButtons(payload);
+    }
+  } else {
+    error.textContent = "One last thing, pretty 🩵 This page isn’t connected to an automatic inbox yet. Use one of the options below to send your answers to me.";
+    error.classList.add("show");
+    btn.disabled = false; btn.textContent = "Save / copy answers 🩵";
+    addFallbackButtons(payload);
+  }
+});
+function addFallbackButtons(payload) {
+  let area = document.getElementById("fallbackArea");
+  if (!area) {
+    area = document.createElement("div"); area.id = "fallbackArea"; area.className = "actions";
+    document.getElementById("submitBtn").parentElement.after(area);
+  }
+  area.innerHTML = "";
+  const whatsapp = document.createElement("button"); whatsapp.className = "btn primary"; whatsapp.textContent = "Send via WhatsApp 🩵";
+  whatsapp.addEventListener("click", () => {
+    const text = payloadToText(payload);
+    window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener,noreferrer");
+  });
+  const copy = document.createElement("button"); copy.className = "btn secondary"; copy.textContent = "Copy answers";
+  copy.addEventListener("click", async () => {
+    const text = payloadToText(payload);
+    try { await navigator.clipboard.writeText(text); copy.textContent = "Copied! 🩵"; }
+    catch { window.prompt("Copy these answers:", text); }
+  });
+  const download = document.createElement("button"); download.className = "btn primary"; download.textContent = "Download answers";
+  download.addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "zy-date-answers.json"; a.click();
+    URL.revokeObjectURL(url);
+  });
+  area.append(whatsapp, copy, download);
+}
+function payloadToText(p) {
+  return `ZY’S LITTLE DATE PLAN 🩵\n\nDinner date: ${p.dinnerTomorrow}\nWhere: ${p.location}\nTime: ${p.preferredTime}\nCravings: ${p.cravings || "Not answered"}\n\nSent with love (and a little overthinking) ☁️`;
+}
+function finishSuccess(payload, message) {
+  document.getElementById("submitBtn").disabled = true;
+  document.getElementById("submitBtn").textContent = "Submitted ✓";
+  document.getElementById("submitInfo").textContent = message;
+  document.getElementById("submitInfo").classList.add("show");
+  buildSummary(document.getElementById("finalSummary"));
+  reviewStep.classList.remove("active");
+  successStep.classList.add("active");
+  progress.style.width = "100%";
+  navActions.style.display = "none";
+  const fallback = document.getElementById("fallbackArea");
+  if (fallback) fallback.remove();
+}
+</script>
+</body>
+</html>
